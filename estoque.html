@@ -6,27 +6,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <title>Cadastrar Produto</title>
+    <title>Estoque</title>
 </head>
 
 <body>
     <div class="mobile-container">
-
-        <!-- Topnav -->
         <div class="topnav">
             <a href="index.html" class="active">
                 <img src="Imagens/logo.png" id="logo"> Olá, Fulane!
             </a>
-
             <a href="#" class="notification">
                 <i class="fa fa-bell"></i>
                 <span class="badge">3</span>
             </a>
-
             <a href="javascript:void(0);" class="icon" onclick="menu()">
                 <i class="fa fa-bars"></i>
             </a>
-
             <div id="myLinks">
                 <a href="cadastrar_produto.html">Cadastrar Produtos</a>
                 <a href="#">Estoque</a>
@@ -34,35 +29,42 @@
             </div>
         </div>
 
-        <!-- Formulário de Cadastro -->
         <div class="container">
             <div class="header">
                 <a href="index.html" class="back-btn"><i class="fa fa-arrow-left"></i></a>
-                <h2>Cadastrar Produto</h2>
+                <h2>Estoque</h2>
             </div>
 
-            <form id="produtoForm">
-                <label for="nome_produto">Nome do Produto</label>
-                <input type="text" id="nome_produto" name="nome_produto" required>
+            <div class="search-container">
+                <input type="text" id="search" placeholder="Pesquisa">
+                <button class="filter-btn"><i class="fa fa-filter"></i></button>
+            </div>
 
-                <label for="categoria">Categoria</label>
-                <select id="categoria" name="categoria" required>
-                    <option value="">Selecione</option>
-                    <option value="Alimentos">Alimentos</option>
-                    <option value="Bebidas">Bebidas</option>
-                    <option value="Limpeza">Limpeza</option>
-                </select>
+            <table class="estoque-table">
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Quantidade</th>
 
-                <label for="estoque_inicial">Estoque Inicial</label>
-                <input type="number" id="estoque_inicial" name="estoque_inicial" required>
-
-                <label for="estoque_minimo">Estoque Mínimo</label>
-                <input type="number" id="estoque_minimo" name="estoque_minimo" required>
-
-                <button type="submit" class="btn-login">Cadastrar</button>
-            </form>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Arroz - 5Kg</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td>Feijão - 1Kg</td>
+                        <td>3</td>
+                    </tr>
+                    <tr>
+                        <td>Açúcar - 1Kg</td>
+                        <td>10</td>
+                    </tr>
+                    
+                </tbody>
+            </table>
         </div>
-
     </div>
 
     <footer class="footer">
