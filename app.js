@@ -57,8 +57,9 @@ function logout() {
     });
 }
 
+
+//Carregar o DOM
 document.addEventListener('DOMContentLoaded', () => {
-    // Agora o DOM está completamente carregado e podemos acessar os elementos
     const formCadastro = document.getElementById("formCadastro");
     const formLogin = document.getElementById("formLogin");
     const btnLogout = document.getElementById("btnLogout");
