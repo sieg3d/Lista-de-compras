@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Página Principal</title>
+</head>
+
+<body>
+  <h2>Bem-vindo à sua lista de compras!</h2>
+  <p>Apenas usuários logados podem acessar esta página.</p>
+
+  <button onclick="logout()">Sair</button>
+
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js"></script>
+  <script src="firebase.js"></script>
+  <script>
+    // Verifica se o usuário está logado
+    auth.onAuthStateChanged((user) => {
+      if (!user) {
+        alert("Você precisa estar logado para acessar esta página.");
+        window.location.href = "login.html"; // Redireciona para login
+      }
+    });
+  </script>
+
+</body>
+
+</html>

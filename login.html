@@ -17,24 +17,38 @@
         <p><span style="color:#B50042; font-weight:bold; font-size: 60px;">GH</span><span
             style="color:#5A6F59; font-weight:bold; font-size: 60px">Flusão</span></p>
       </div>
+
       <div class="container">
-        <form id="produtoForm">
-          <label for="email">E-mail</label>
-          <input type="email" id="email" name="email" required>
+        <form id="formLogin">
+          <!-- <label for="emailLogin">E-mail</label>
+          <input type="email" id="emailLogin" name="email" required>
           <label for="senha">Senha</label>
           <input type="password" id="senha" name="senha" required>
+          <button type="submit" class="btn-login">Conectar</button> -->
+          <label for="emailLogin">E-mail</label>
+          <input type="email" id="emailLogin" required>
+          <label for="senhaLogin">Senha</label>
+          <input type="password" id="senhaLogin" required>
           <button type="submit" class="btn-login">Conectar</button>
         </form>
+
+
         <div style="text-align: center; margin-top: 10px;">
           <a href="#" style="color: #890334;">Esqueci a senha</a>
         </div>
+
         <div style="text-align: center; margin-top: 20px;">
-          <img src="Imagens/google-icon.png" alt="Descrição da imagem" class="ico">
-      </div>
+          <img src="Imagens/google-icon.png" alt="Login com Google" class="ico" onclick="loginGoogle()" style="cursor: pointer;">
         </div>
       </div>
     </div>
   </div>
+
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js" type="module"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js" type="module"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js" type="module"></script>
+  <script type="module" src="app.js" defer></script>
+  
 </body>
 
 </html>
