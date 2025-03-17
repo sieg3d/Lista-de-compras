@@ -1,4 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth,  } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import { getDatabase, ref, push, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 // Configuração do Firebase
@@ -14,23 +15,31 @@ const firebaseConfig = {
 // Inicializa Firebase
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const auth = getAuth(app);
 
 // Função para cadastrar um produto no Realtime Database
 async function cadastrarProduto(nome, categoria, estoqueInicial, estoqueMinimo) {
     try {
-        const produtosRef = ref(db, 'produtos');
-        const novoProdutoRef = push(produtosRef);
-        await set(novoProdutoRef, {
-            nome: nome,
-            categoria: categoria,
-            estoque_inicial: estoqueInicial,
-            estoque_minimo: estoqueMinimo,
-            data_cadastro: new Date().toISOString()
-        });
+        const user = auth.currentUser;
+        if (user) {
+            const uid = user.uid;
+            const produtosRef = ref(db, `users/${uid}/produtos`);
+            const novoProdutoRef = push(produtosRef);
+            await set(novoProdutoRef, {
+                nome: nome,
+                categoria: categoria,
+                estoque_inicial: estoqueInicial,
+                estoque_minimo: estoqueMinimo,
+                data_cadastro: new Date().toISOString()
+            });
 
-        console.log("Produto cadastrado com ID:", novoProdutoRef.key);
-        alert("Produto cadastrado com sucesso!");
-        document.getElementById("produtoForm").reset(); // Limpa o formulário
+            console.log("Produto cadastrado com ID:", novoProdutoRef.key);
+            alert("Produto cadastrado com sucesso!");
+            document.getElementById("produtoForm").reset(); // Limpa o formulário
+        } else {
+            console.error("Nenhum usuário logado");
+            alert("Você precisa estar logado para cadastrar produtos.");
+        }
     } catch (error) {
         console.error("Erro ao cadastrar produto:", error);
         alert("Erro ao cadastrar produto: " + error.message);

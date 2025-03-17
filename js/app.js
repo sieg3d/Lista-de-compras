@@ -23,7 +23,7 @@ const db = getDatabase(app);
 // ===============================
 
 // Cadastrar Usuário
-function cadastrar(email, senha, nome) { // Adicionei 'nome' como parâmetro
+function cadastrar(email, senha, nome) { 
     createUserWithEmailAndPassword(auth, email, senha)
         .then((userCredential) => {
             console.log("Usuário cadastrado:", userCredential.user);
@@ -31,7 +31,7 @@ function cadastrar(email, senha, nome) { // Adicionei 'nome' como parâmetro
             const userRef = ref(db, 'users/' + userCredential.user.uid);
             set(userRef, {
                 nome: nome,
-                email: email // Opcional: Salvar o email também
+                email: email 
             }).then(() => {
                 alert("Cadastro realizado com sucesso!");
             }).catch((error) => {
@@ -123,23 +123,6 @@ async function listarProdutos() {
     }
 }
 
-function atualizarNomeUsuario() {
-    const auth = getAuth();
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            const nomeUsuario = localStorage.getItem("nomeUsuario");
-            if (nomeUsuario) {
-                const elementosNome = document.querySelectorAll("#nome-usuario"); // Seleciona todos os elementos com o ID
-                elementosNome.forEach(elemento => {
-                    elemento.textContent = nomeUsuario;
-                });
-            }
-        } else {
-            // Se o usuário não estiver logado, você pode limpar o nome ou redirecionar
-            localStorage.removeItem("nomeUsuario");
-        }
-    });
-}
 
 
 // ===============================
@@ -153,7 +136,7 @@ if (formCadastro) {
         e.preventDefault();
         const email = document.getElementById("emailCadastro").value;
         const senha = document.getElementById("senhaCadastro").value;
-        const nome = document.getElementById("nomeCadastro").value; // Obtenha o nome do campo de nome
+        const nome = document.getElementById("nomeCadastro").value; 
         cadastrar(email, senha, nome); // Passe o nome para a função cadastrar
     });
 }
