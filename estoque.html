@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Estoque</title>
+    <script type="module" src="js/auth-check.js"></script>
 </head>
 
 <body>
@@ -45,23 +46,10 @@
                     <tr>
                         <th>Produto</th>
                         <th>Quantidade</th>
-
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>Arroz - 5Kg</td>
-                        <td>1</td>
-                    </tr>
-                    <tr>
-                        <td>Feijão - 1Kg</td>
-                        <td>3</td>
-                    </tr>
-                    <tr>
-                        <td>Açúcar - 1Kg</td>
-                        <td>10</td>
-                    </tr>
-                    
+                    <!-- Os produtos serão carregados dinamicamente aqui -->
                 </tbody>
             </table>
         </div>
@@ -71,7 +59,7 @@
         <p>© 2025 GHEmpresas - Todos os direitos reservados.</p>
     </footer>
 
-    <script src="script.js"></script>
+    <script type="module" src="js/estoque.js"></script>
 </body>
 
 </html>
