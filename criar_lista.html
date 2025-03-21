@@ -14,7 +14,7 @@
     <div class="mobile-container">
         <div class="topnav">
             <a href="index.html" class="active">
-                <img src="Imagens/logo.png" id="logo"> Olá, Fulane!
+                <img src="Imagens/logo.png" id="logo"> Olá, <span id="nome-usuario-nav"></span>!
             </a>
             <a href="#" class="notification">
                 <i class="fa fa-bell"></i>
@@ -38,32 +38,22 @@
 
             <label for="nome_lista">Nome da Lista:</label>
             <input type="text" id="nome_lista" placeholder="Digite o nome da lista">
-            
+
             <table class="lista-table">
                 <thead>
                     <tr>
-                        <th class="item-column">Item</th>
-                        <th class="quantidade-column">Quantidade</th>
+                        <th class="item-column">Produto</th>
+                        <th class="quantidade-column">Qtd</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td class="item-column">Arroz - 5Kg</td>
-                        <td class="quantidade-column"><input type="number" value="1" min="1"></td>
-                    </tr>
-                    <tr>
-                        <td class="item-column">Feijão - 1Kg</td>
-                        <td class="quantidade-column"><input type="number" value="3" min="1"></td>
-                    </tr>
-                    <tr>
-                        <td class="item-column">Açúcar - 1Kg</td>
-                        <td class="quantidade-column"><input type="number" value="10" min="1"></td>
-                    </tr>
-                </tbody>
+                    </tbody>
             </table>
-            <a href="#" class="adicionar-produto">+ Adicionar Produto</a>
 
-            <button class="btn-login">Salvar</button>
+            <button id="adicionar-item" class="adcItem">+ Adicionar Item</button>
+
+            <button id="salvar-lista" class="btn-login">Salvar Lista</button>
         </div>
     </div>
 
@@ -71,56 +61,8 @@
         <p>© 2025 GHEmpresas - Todos os direitos reservados.</p>
     </footer>
 
-    <script src="script.js"></script>
+    <script type="module" src="js/criar_lista.js"></script>
+    <script src="js/script.js"></script>
 </body>
 
 </html>
-
-<style>
-.lista-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.item-column {
-    width: 70%;
-    text-align: left;
-}
-
-.quantidade-column {
-    width: 30%;
-    text-align: center;
-}
-
-.quantidade-column input {
-    width: 50px;
-    text-align: center;
-    padding: 5px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-.adicionar-produto {
-    display: block;
-    color: green;
-    text-align: center;
-    margin-top: 10px;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.btn-login {
-    width: 100%;
-    padding: 10px;
-    background-color: #57725B;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    margin-top: 20px;
-}
-
-.btn:hover {
-    background-color: #5e0226;
-}
-</style>
