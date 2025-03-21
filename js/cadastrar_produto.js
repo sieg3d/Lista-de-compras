@@ -18,7 +18,7 @@ const db = getDatabase(app);
 const auth = getAuth(app);
 
 // Função para cadastrar um produto no Realtime Database
-async function cadastrarProduto(nome, categoria, estoqueInicial, estoqueMinimo) {
+async function cadastrarProduto(nome, estoqueInicial, estoqueMinimo) {
     try {
         const user = auth.currentUser;
         if (user) {
@@ -27,7 +27,7 @@ async function cadastrarProduto(nome, categoria, estoqueInicial, estoqueMinimo) 
             const novoProdutoRef = push(produtosRef);
             await set(novoProdutoRef, {
                 nome: nome,
-                categoria: categoria,
+                // categoria: categoria, // Removido
                 estoque_inicial: estoqueInicial,
                 estoque_minimo: estoqueMinimo,
                 data_cadastro: new Date().toISOString()
@@ -55,11 +55,11 @@ document.addEventListener("DOMContentLoaded", () => {
             e.preventDefault();
 
             const nome = document.getElementById("nome_produto").value;
-            const categoria = document.getElementById("categoria").value;
+            // const categoria = document.getElementById("categoria").value; // Removido
             const estoqueInicial = parseInt(document.getElementById("estoque_inicial").value);
             const estoqueMinimo = parseInt(document.getElementById("estoque_minimo").value);
 
-            cadastrarProduto(nome, categoria, estoqueInicial, estoqueMinimo);
+            cadastrarProduto(nome, estoqueInicial, estoqueMinimo); // Categoria removida
         });
     } else {
         console.error("Formulário de produto não encontrado!");
