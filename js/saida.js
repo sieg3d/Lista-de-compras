@@ -3,14 +3,24 @@ import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/
 import { getDatabase, ref, get, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 // Configuração do Firebase (substitua com sua configuração real)
+/*const firebaseConfig = {
+  apiKey: "AIzaSyA8cXYQ4m-uyEjbJJF_1_4Re8RJvqo1DWE",
+  authDomain: "dlopes-lasalle-2025.firebaseapp.com",
+  projectId: "dlopes-lasalle-2025",
+  storageBucket: "dlopes-lasalle-2025.appspot.com",
+  messagingSenderId: "91491434656",
+  appId: "1:91491434656:web:8a083bf3df35b5e18949c5",
+};*/
 const firebaseConfig = {
-    apiKey: "AIzaSyA8cXYQ4m-uyEjbJJF_1_4Re8RJvqo1DWE",
-    authDomain: "dlopes-lasalle-2025.firebaseapp.com",
-    projectId: "dlopes-lasalle-2025",
-    storageBucket: "dlopes-lasalle-2025.appspot.com",
-    messagingSenderId: "91491434656",
-    appId: "1:91491434656:web:8a083bf3df35b5e18949c5",
-};
+    apiKey: "AIzaSyAlgaQN8Oq7tsS6UhymWriTzTga1qmg-ZI",
+    authDomain: "rlb-lasalle-firebase.firebaseapp.com",
+    databaseURL: "https://rlb-lasalle-firebase-default-rtdb.firebaseio.com",
+    projectId: "rlb-lasalle-firebase",
+    storageBucket: "rlb-lasalle-firebase.firebasestorage.app",
+    messagingSenderId: "488497251520",
+    appId: "1:488497251520:web:32e3bf3f71040ef1c69925",
+    measurementId: "G-DMLGRWXSP9"
+  };
 
 // Inicializa o Firebase
 const app = initializeApp(firebaseConfig);
@@ -20,6 +30,7 @@ const auth = getAuth(app);
 // Função para carregar os produtos do Firebase e popular o elemento select
 function carregarProdutos(usuario) {
     const selectProduto = document.getElementById("produto");
+    selectProduto.innerHTML = "";
 
     if (usuario) {
         const uid = usuario.uid;
@@ -135,7 +146,7 @@ function registrarSaida(usuario, produtoId, quantidade) {
 }
 
 // Listeners de eventos
-document.addEventListener("DOMContentLoaded", () => {
+document.getElementById("btn_saida").addEventListener("click", () => {
     onAuthStateChanged(auth, (usuario) => {
         if (usuario) {
             carregarProdutos(usuario); // Carrega os produtos ao carregar a página

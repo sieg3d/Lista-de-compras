@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <title>Home</title>
-  <script type="module" src="js/auth-check.js"></script>
+  
 </head>
 
 <body>
@@ -33,56 +33,149 @@
       </div>
     </div>
 
-    <div style="padding-left:16px; text-align:center;">
-      <h2>Lista de Compras</h2>
-      <p><span style="color:#B50042; font-weight:bold; font-size: 60px;">GH</span><span
-          style="color:#5A6F59; font-weight:bold; font-size: 60px">Flusão</span></p>
-    </div>
+      <div id = "index">
+        <div style="padding-left:16px; text-align:center;">
+          <h2>Lista de Compras</h2>
+          <p><span style="color:#B50042; font-weight:bold; font-size: 60px;">GH</span><span
+              style="color:#5A6F59; font-weight:bold; font-size: 60px">Flusão</span></p>
+        </div>
 
-    <!-- Container para os botões -->
-    <div class="button-container">
-      <button class="btn" onclick="window.location.href='cadastrar_produto.html'">
-        <img src="Imagens/produtos.png" alt="Cadastrar Produtos">
-        Cadastrar Produto
-      </button>
-      <button class="btn">
-        <img src="Imagens/verificacao.png" alt="Consultar Listas" onclick="window.location.href='listas.html'">
-        Consultar Listas
-      </button>
-      <button class="btn">
-        <img src="Imagens/armazem.png" alt="Estoque" onclick="window.location.href='estoque.html'">
-        Estoque
-      </button>
-      <button class="btn">
-        <img src="Imagens/teste.png" alt="Resigtrar Saídas" onclick="window.location.href='saida.html'">
-        Registrar Saídas
-      </button>
-      <button class="btn">
-        <img src="Imagens/conhecimento.png" alt="Compartilhar Lista">
-        Compartilhar Lista
-      </button>
-      <button class="btn">
-        <img src="Imagens/duplicado.png" alt="Copiar Lista">
-        Copiar Lista
-      </button>
-    </div>
+        <!-- Container para os botões -->
+        <div class="button-container">
+          <button class="btn" onclick="show('cadastrar_produto','index');">
+            <img src="Imagens/produtos.png" alt="Cadastrar Produtos">
+            Cadastrar Produto
+          </button>
+          <button class="btn" onclick="show('consultar_listas','index');">
+            <img src="Imagens/verificacao.png" alt="Consultar Listas">
+            Consultar Listas
+          </button>
+          <button class="btn" id="btn_estoque" onclick="show('estoque','index');">
+            <img src="Imagens/armazem.png" alt="Estoque">
+            Estoque
+          </button>
+          <button class="btn" id="btn_saida" onclick="show('registrar_saidas','index');">
+            <img src="Imagens/teste.png" alt="Resigtrar Saídas">
+            Registrar Saídas
+          </button>
+          <button class="btn">
+            <img src="Imagens/conhecimento.png" alt="Compartilhar Lista">
+            Compartilhar Lista
+          </button>
+          <button class="btn">
+            <img src="Imagens/duplicado.png" alt="Copiar Lista">
+            Copiar Lista
+          </button>
+        </div>
 
-    <div class="button-container full-width">
-      <button class="btn full-width">
-        <img src="Imagens/carrinho-de-supermercado.png" alt="Ícone 7">
-        Vamos às Compras!
-      </button>
-    </div>
+        <div class="button-container full-width">
+          <button class="btn full-width">
+            <img src="Imagens/carrinho-de-supermercado.png" alt="Ícone 7">
+            Vamos às Compras!
+          </button>
+        </div>
+      </div>
+        <!--DIV de Cadastrar Produto-->
+      <div id = "cadastrar_produto" style = "display:none">
+        <div class="container">
+            <div class="header">
+                <a onclick="show('index','cadastrar_produto');" class="back-btn"><i class="fa fa-arrow-left"></i></a>
+                <h2>Cadastrar Produto</h2>
+            </div>
 
-  </div>
+            <form id="produtoForm">
+                <label for="nome_produto">Nome do Produto</label>
+                <input type="text" id="nome_produto" name="nome_produto" required>
 
+                <label for="estoque_inicial">Estoque Inicial</label>
+                <input type="number" id="estoque_inicial" name="estoque_inicial" required min="0">
 
+                <label for="estoque_minimo">Estoque Mínimo</label>
+                <input type="number" id="estoque_minimo" name="estoque_minimo" required min="0">
 
+                <button type="submit" class="btn-login">Cadastrar</button>
+            </form>
+        </div>
+      </div>
+         <!--DIV de Consultar Listas-->
+      <div id = "consultar_listas" style = "display:none">
+        <div class="container">
+            <div class="header">
+                <a onclick="show('index','consultar_listas');" class="back-btn"><i class="fa fa-arrow-left"></i></a>
+                <h2>Visualizar Lista</h2>
+            </div>
+
+            <div class="search-container">
+                <select id="selectListas">
+                    <option value="">Selecione uma lista</option>
+                </select>
+            </div>
+
+            <div id="detalhesLista"></div>
+        </div>
+      </div>
+      <!--DIV de Estoque-->
+      <div id="estoque" style = "display:none">
+        <div class="container">
+          <div class="header">
+              <a onclick="show('index','estoque');" class="back-btn"><i class="fa fa-arrow-left"></i></a>
+              <h2>Estoque</h2>
+          </div>
+
+          <div class="search-container">
+              <input type="text" id="search" placeholder="Pesquisa">
+              <button class="filter-btn"><i class="fa fa-filter"></i></button>
+          </div>
+
+          <table class="estoque-table">
+              <thead>
+                  <tr>
+                      <th>Produto</th>
+                      <th>Quantidade</th>
+                  </tr>
+              </thead>
+              <tbody>
+                  </tbody>
+          </table>
+        </div>
+      </div>
+      <!--DIV de Registrar Saídas-->
+      <div id = "registrar_saidas" style = "display:none">
+        <div class="container">
+            <div class="header">
+                <a onclick="show('index','registrar_saidas');" class="back-btn"><i class="fa fa-arrow-left"></i></a>
+                <h2>Saída de Produto</h2>
+            </div>
+
+            <form id="saidaForm">
+                <label for="produto">Produto:</label>
+                <select id="produto"></select>
+
+                <div class="disponibilidade-container">
+                    <span id="disponivel"></span>
+                    <label for="quantidade">Quantidade:</label>
+                    <div class="quantidade-wrapper">
+                        <input type="number" id="quantidade" value="1" min="1">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-login">Registrar Saída</button>
+            </form>
+        </div>
+      </div>
+  <!--Div de Compartilhar Lista-->
+  <!--A FAZER-->
+  <!--Div de Copiar Lista-->
+  <!--A FAZER-->
   <footer class="footer">
     <p>© 2025 GHEmpresas - Todos os direitos reservados.</p>
   </footer>
-
   <script src="js/script.js"></script>
+  <script type="module" src="js/estoque.js"></script>
+  <script type="module" src="js/cadastrar_produto.js"></script>
+  <script type="module" src="js/listas.js"></script>
+  <script type="module" src="js/saida.js"></script>
+  <script type="module" src="js/auth-check.js"></script>
 </body>
 
 </html>
