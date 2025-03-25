@@ -1,15 +1,13 @@
-<!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <script type="module" src="js/auth-check.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <title>Visualizar Lista</title>
+    <title>Compartilhar Lista</title>
+    <script type="module" src="js/compartilhar_lista.js"></script>
 </head>
-
 <body>
     <div class="mobile-container">
         <div class="topnav">
@@ -25,7 +23,7 @@
             </a>
             <div id="myLinks">
                 <a href="cadastrar_produto.html">Cadastrar Produtos</a>
-                <a href="#">Estoque</a>
+                <a href="estoque.html">Estoque</a>
                 <a href="#">Sair</a>
             </div>
         </div>
@@ -33,30 +31,18 @@
         <div class="container">
             <div class="header">
                 <a href="index.html" class="back-btn"><i class="fa fa-arrow-left"></i></a>
-                <h2>Visualizar Lista</h2>
+                <h2>Compartilhar Lista</h2>
             </div>
 
-            <div class="search-container">
-                <select id="selectListas">
-                    <option value="">Selecione uma lista</option>
+            <label for="email_convidado">Email do Convidado:</label>
+            <input type="email" id="email_convidado" placeholder="Digite o email do convidado">
+
+            <label for="selecionar_lista">Selecionar Lista:</label>
+            <select id="selecionar_lista">
+                <option value="">Selecione uma lista</option>
                 </select>
-            </div>
 
-            <div id="detalhesLista">
-                </div>
-
-            <button id="adicionarProdutoBtn">Adicionar Produto</button>
-            <button id="salvarAlteracoesBtn">Salvar Alterações</button>
-
-            <div id="novoProdutoForm" style="display: none;">
-                <h3>Adicionar Novo Produto</h3>
-                <label for="produtoSelect">Produto:</label>
-                <select id="produtoSelect"></select>
-                <label for="quantidadeInput">Quantidade:</label>
-                <input type="number" id="quantidadeInput" value="1">
-                <button id="adicionarItemBtn">Adicionar Item</button>
-                <button id="cancelarAdicaoBtn">Cancelar</button>
-            </div>
+            <button id="btn_compartilhar" class="btn-login">Compartilhar</button>
         </div>
     </div>
 
@@ -64,7 +50,6 @@
         <p>© 2025 GHEmpresas - Todos os direitos reservados.</p>
     </footer>
 
-    <script type="module" src="js/listas.js"></script>
+    <script type="module" src="js/compartilhar_lista.js"></script>
 </body>
-
 </html>
