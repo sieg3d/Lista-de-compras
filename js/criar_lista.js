@@ -144,7 +144,8 @@ function salvarLista(user) {
             }
             itensLista.push({
                 produtoId: produtoId,
-                quantidade: quantidade
+                quantidade: quantidade,
+                concluido: false
             });
         }
     });

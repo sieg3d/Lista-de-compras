@@ -16,114 +16,77 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getDatabase(app);
 
-// Função para atualizar o status do item no banco de dados
-function atualizarStatusItemConvidado(convidadoId, listaId, itemKey, concluido) {
-    if (convidadoId && listaId && itemKey !== undefined) {
-        const listaRef = ref(db, `convidados/${convidadoId}/listas_compartilhadas/${listaId}/itens/${itemKey}/concluido`);
-        update(listaRef, concluido);
+// Atualizar status concluído de um item
+function atualizarStatusItemConvidado(donoId, listaId, itemKey, concluido) {
+    if (donoId && listaId && itemKey !== undefined) {
+        const itemRef = ref(db, `users/${donoId}/listas/${listaId}/itens/${itemKey}/concluido`);
+        update(itemRef, { '.value': concluido });
     }
 }
 
-// Função para exibir os detalhes da lista selecionada
-async function exibirDetalhesListaConvidado(convidadoId, listaId) {
+// Exibir detalhes da lista compartilhada
+async function exibirDetalhesListaConvidado(donoId, listaId, convidadoId) {
     const detalhesListaDiv = document.getElementById("detalhesLista");
     detalhesListaDiv.innerHTML = "";
 
     try {
-        const listasCompartilhadasRef = ref(db, `convidados/${convidadoId}/listas_compartilhadas`);
-        const snapshot = await get(listasCompartilhadasRef);
+        const listaUserRef = ref(db, `users/${donoId}/listas/${listaId}`);
+        const listaUserSnapshot = await get(listaUserRef);
 
-        if (snapshot.exists() && snapshot.val() && snapshot.val().hasOwnProperty(listaId)) {
-            const listaRef = ref(db, `listas_compartilhadas/${listaId}`);
-            const listaSnapshot = await get(listaRef);
+        if (listaUserSnapshot.exists()) {
+            const listaDetalhes = listaUserSnapshot.val();
+            let detalhesHTML = `<h2>${listaDetalhes.nome}</h2>`;
+            detalhesHTML += "<table><thead><tr><th>Produto</th><th>Quantidade</th><th>Concluído</th></tr></thead><tbody>";
 
-            if (listaSnapshot.exists()) {
-                const listaCompartilhadaDetalhes = listaSnapshot.val();
-                const donoId = listaCompartilhadaDetalhes.dono_id;
-                const listaUserRef = ref(db, `users/${donoId}/listas/${listaId}`);
-                const listaUserSnapshot = await get(listaUserRef);
+            if (listaDetalhes.itens) {
+                for (const itemKey in listaDetalhes.itens) {
+                    const item = listaDetalhes.itens[itemKey];
+                    let produtoNome = `Produto ID: ${item.produtoId}`;
 
-                if (listaUserSnapshot.exists()) {
-                    const listaDetalhes = listaUserSnapshot.val();
-                    let detalhesHTML = `<h2>${listaDetalhes.nome}</h2>`;
-                    detalhesHTML += "<table><thead><tr><th></th><th>Produto</th><th>Quantidade</th><th>Concluído</th><th>Ações</th></tr></thead><tbody>";
-
-                    if (listaDetalhes.itens) {
-                        for (const itemKey in listaDetalhes.itens) {
-                            const item = listaDetalhes.itens[itemKey];
-                            try {
-                                let produtoRef;
-                                produtoRef = ref(db, `users/${donoId}/produtos/${item.produtoId}`);
-                                const produtoSnapshot = await get(produtoRef);
-
-                                if (produtoSnapshot.exists()) {
-                                    const produto = produtoSnapshot.val();
-                                    if (produto && produto.nome) {
-                                        detalhesHTML += `
-                                            <tr id="item-${itemKey}">
-                                                <td></td>
-                                                <td>${produto.nome}</td>
-                                                <td><input type="number" id="quantidade-${itemKey}" value="${item.quantidade}" data-item-key="${itemKey}"></td>
-                                                <td><input type="checkbox" id="check-${itemKey}" data-item-key="${itemKey}" ${item.concluido ? 'checked' : ''}></td>
-                                                <td>
-                                                    
-                                                </td>
-                                            </tr>`;
-                                    } else {
-                                        detalhesHTML += `
-                                            <tr id="item-${itemKey}">
-                                                <td></td>
-                                                <td>Produto ID: ${item.produtoId} (Produto não encontrado)</td>
-                                                <td><input type="number" id="quantidade-${itemKey}" value="${item.quantidade}" data-item-key="${itemKey}"></td>
-                                                <td><input type="checkbox" id="check-${itemKey}" data-item-key="${itemKey}" ${item.concluido ? 'checked' : ''}></td>
-                                                <td>
-                                                    
-                                                </td>
-                                            </tr>`;
-                                    }
-                                }
-                            } catch (error) {
-                                console.error("Erro ao buscar produto:", error);
-                                detalhesHTML += `
-                                    <tr id="item-${itemKey}">
-                                        <td></td>
-                                        <td>Erro ao buscar produto</td>
-                                        <td><input type="number" id="quantidade-${itemKey}" value="${item.quantidade}" data-item-key="${itemKey}"></td>
-                                        <td><input type="checkbox" id="check-${itemKey}" data-item-key="${itemKey}" ${item.concluido ? 'checked' : ''}></td>
-                                        <td>
-                                            
-                                        </td>
-                                    </tr>`;
-                            }
+                    try {
+                        const produtoRef = ref(db, `users/${donoId}/produtos/${item.produtoId}`);
+                        const produtoSnapshot = await get(produtoRef);
+                        if (produtoSnapshot.exists()) {
+                            const produto = produtoSnapshot.val();
+                            produtoNome = produto.nome;
                         }
-                    } else {
-                        detalhesHTML += "<tr><td colspan='5'>Nenhum item na lista.</td></tr>";
+                    } catch (error) {
+                        console.error("Erro ao buscar produto:", error);
                     }
 
-                    detalhesHTML += "</tbody></table>";
-                    detalhesListaDiv.innerHTML = detalhesHTML;
+                    detalhesHTML += `
+                        <tr id="item-${itemKey}">
+                            <td>${produtoNome}</td>
+                            <td><input type="number" id="quantidade-${itemKey}" value="${item.quantidade}" data-item-key="${itemKey}" disabled></td>
+                            <td><input type="checkbox" id="check-${itemKey}" data-item-key="${itemKey}" ${item.concluido ? 'checked' : ''}></td>
+                        </tr>`;
+                }
+            } else {
+                detalhesHTML += "<tr><td colspan='3'>Nenhum item na lista.</td></tr>";
+            }
 
-                    // Adiciona listeners para os checkboxes após a tabela ser criada
-                    if (listaDetalhes.itens) {
-                        for (const itemKey in listaDetalhes.itens) {
-                            const checkbox = document.getElementById(`check-${itemKey}`);
-                            if (checkbox) {
-                                checkbox.addEventListener("change", () => {
-                                    const row = document.getElementById(`item-${itemKey}`);
-                                    if (checkbox.checked) {
-                                        row.style.textDecoration = "line-through";
-                                    } else {
-                                        row.style.textDecoration = "none";
-                                    }
-                                    atualizarStatusItemConvidado(convidadoId, listaId, itemKey, checkbox.checked);
-                                });
+            detalhesHTML += "</tbody></table>";
+            detalhesListaDiv.innerHTML = detalhesHTML;
+
+            // Listeners dos checkboxes
+            if (listaDetalhes.itens) {
+                for (const itemKey in listaDetalhes.itens) {
+                    const checkbox = document.getElementById(`check-${itemKey}`);
+                    if (checkbox) {
+                        checkbox.addEventListener("change", () => {
+                            const row = document.getElementById(`item-${itemKey}`);
+                            if (checkbox.checked) {
+                                row.style.textDecoration = "line-through";
+                            } else {
+                                row.style.textDecoration = "none";
                             }
-                        }
+                            atualizarStatusItemConvidado(donoId, listaId, itemKey, checkbox.checked);
+                        });
                     }
                 }
             }
         } else {
-            detalhesListaDiv.innerHTML = "<p>Nenhuma lista compartilhada com você.</p>";
+            detalhesListaDiv.innerHTML = "<p>Lista não encontrada.</p>";
         }
     } catch (error) {
         console.error("Erro ao exibir detalhes da lista:", error);
@@ -131,147 +94,54 @@ async function exibirDetalhesListaConvidado(convidadoId, listaId) {
     }
 }
 
-// Função para adicionar um novo produto à lista
-function adicionarNovoProdutoConvidado(convidadoId, listaId, produtoId, quantidade) {
-    if (convidadoId && listaId && produtoId && quantidade) {
-        const listaItensRef = ref(db, `convidados/${convidadoId}/listas_compartilhadas/${listaId}/itens`);
-        push(listaItensRef, {
-            produtoId: produtoId,
-            quantidade: quantidade,
-            concluido: false
-        }).then(() => {
-            alert("Produto adicionado à lista.");
-            exibirDetalhesListaConvidado(convidadoId, listaId);
-        }).catch((error) => {
-            console.error("Erro ao adicionar produto:", error);
-            alert("Erro ao adicionar produto.");
-        });
-    }
-}
-
-// Função para editar a quantidade de um item na lista
-function editarQuantidadeItemConvidado(convidadoId, listaId, itemKey, quantidade) {
-    if (convidadoId && listaId && itemKey !== undefined && quantidade) {
-        const quantidadeRef = ref(db, `convidados/${convidadoId}/listas_compartilhadas/${listaId}/itens/${itemKey}/quantidade`);
-        update(quantidadeRef, quantidade);
-    }
-}
-
-// Manipular a seleção da lista
+// Lidar com a seleção da lista
 const selectListasConvidado = document.getElementById("selectListasConvidado");
 selectListasConvidado.addEventListener("change", (event) => {
     const convidadoId = auth.currentUser.uid;
-    const listaId = event.target.value;
-    if (listaId) {
-        exibirDetalhesListaConvidado(convidadoId, listaId);
+    const value = event.target.value;
+
+    if (value) {
+        const [donoId, listaId] = value.split('/');
+        exibirDetalhesListaConvidado(donoId, listaId, convidadoId);
     } else {
         document.getElementById("detalhesLista").innerHTML = "";
     }
 });
 
-// Carregar as opções de lista compartilhada no select
+// Carregar listas compartilhadas
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         const convidadoId = user.uid;
-        const listasCompartilhadasRef = ref(db, `convidados/${convidadoId}/listas_compartilhadas`);
-        const snapshot = await get(listasCompartilhadasRef);
-        const selectListasConvidado = document.getElementById("selectListasConvidado");
-        const novoProdutoForm = document.getElementById("novoProdutoForm");
+        const usuariosRef = ref(db, 'users');
+        const snapshot = await get(usuariosRef);
 
         selectListasConvidado.innerHTML = "<option value=''>Selecione uma lista</option>";
 
         if (snapshot.exists()) {
-            const listasCompartilhadas = snapshot.val();
-            for (const listaId in listasCompartilhadas) {
-                if (listasCompartilhadas.hasOwnProperty(listaId)) {
-                    const listaRef = ref(db, `listas_compartilhadas/${listaId}`);
-                    const listaSnapshot = await get(listaRef);
+            snapshot.forEach((userSnapshot) => {
+                const donoId = userSnapshot.key;
+                const listas = userSnapshot.val().listas;
 
-                    if (listaSnapshot.exists()) {
-                        const listaCompartilhadaDetalhes = listaSnapshot.val();
-                        const donoId = listaCompartilhadaDetalhes.dono_id;
-                        const listaUserRef = ref(db, `users/${donoId}/listas/${listaId}`);
-                        const listaUserSnapshot = await get(listaUserRef);
+                if (listas) {
+                    for (const listaId in listas) {
+                        const lista = listas[listaId];
+                        const convidados = lista.convidados || {};
 
-                        if (listaUserSnapshot.exists()) {
-                            const listaDetalhes = listaUserSnapshot.val();
+                        if (convidados.hasOwnProperty(convidadoId)) {
                             const option = document.createElement("option");
-                            option.value = listaId;
-                            option.textContent = listaDetalhes.nome;
+                            option.value = `${donoId}/${listaId}`;
+                            option.textContent = lista.nome;
                             selectListasConvidado.appendChild(option);
                         }
                     }
                 }
-            }
+            });
         } else {
             selectListasConvidado.innerHTML = "<option>Nenhuma lista compartilhada</option>";
             document.getElementById("detalhesLista").innerHTML = "";
         }
-
-        // Manipulador de evento para o botão "Adicionar Produto"
-        document.getElementById("adicionarProdutoBtn").addEventListener("click", () => {
-            novoProdutoForm.style.display = "block";
-            document.getElementById("adicionarProdutoBtn").style.display = "none";
-            document.getElementById("salvarAlteracoesBtn").style.display = "none";
-
-            // Preenche o select com os produtos cadastrados
-            const produtoSelect = document.getElementById("produtoSelect");
-            const uid = user.uid;
-            const produtosRef = ref(db, `users/${uid}/produtos`);
-            get(produtosRef).then((snapshot) => {
-                produtoSelect.innerHTML = "<option value=''>Selecione um produto</option>";
-                if (snapshot.exists()) {
-                    const produtos = snapshot.val();
-                    for (const key in produtos) {
-                        const produto = produtos[key];
-                        const option = document.createElement("option");
-                        option.value = key;
-                        option.textContent = produto.nome;
-                        produtoSelect.appendChild(option);
-                    }
-                }
-            });
-        });
-
-        // Manipulador de evento para o botão "Salvar Alterações"
-        document.getElementById("salvarAlteracoesBtn").addEventListener("click", () => {
-            const quantidadeInputs = document.querySelectorAll('input[id^="quantidade-"]');
-            quantidadeInputs.forEach((input) => {
-                const itemKey = input.dataset.itemKey;
-                const quantidade = input.value;
-                editarQuantidadeItemConvidado(convidadoId, selectListasConvidado.value, itemKey, quantidade);
-            });
-            exibirDetalhesListaConvidado(convidadoId, selectListasConvidado.value);
-        });
-
-        // Manipulador de evento para o botão "Adicionar Item"
-        document.getElementById("adicionarItemBtn").addEventListener("click", () => {
-            const produtoSelect = document.getElementById("produtoSelect");
-            const quantidadeInput = document.getElementById("quantidadeInput");
-            if (produtoSelect.value && quantidadeInput.value) {
-                adicionarNovoProdutoConvidado(convidadoId, selectListasConvidado.value, produtoSelect.value, quantidadeInput.value);
-                novoProdutoForm.style.display = "none";
-                document.getElementById("adicionarProdutoBtn").style.display = "block";
-                document.getElementById("salvarAlteracoesBtn").style.display = "block";
-            } else {
-                alert("Por favor, selecione um produto e insira a quantidade.");
-            }
-        });
-
-        // Manipulador de evento para o botão "Cancelar Adição"
-        document.getElementById("cancelarAdicaoBtn").addEventListener("click", () => {
-            novoProdutoForm.style.display = "none";
-            document.getElementById("adicionarProdutoBtn").style.display = "block";
-            document.getElementById("salvarAlteracoesBtn").style.display = "block";
-        });
-
-        // Event delegation para botões de editar e remover
-        document.getElementById("detalhesLista").addEventListener("click", (event) => {
-            const target = event.target;
-            if (target.classList.contains("editar-btn")) {
-                //Implementar lógica de edição (exibir campos de edição na linha, etc.)
-                console.log("Editar item:", itemKey);
-            }
-        });
+    } else {
+        alert("Você precisa estar logado.");
+        window.location.href = "login.html";
     }
 });

@@ -1,6 +1,6 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 // Configuração do Firebase
 const firebaseConfig = {
@@ -22,93 +22,75 @@ document.addEventListener("DOMContentLoaded", () => {
     const selecionarListaSelect = document.getElementById("selecionar_lista");
     const btnCompartilhar = document.getElementById("btn_compartilhar");
 
-    // Função para carregar as listas do usuário
     const carregarListas = async (userId) => {
         const listasRef = ref(db, `users/${userId}/listas`);
         const snapshot = await get(listasRef);
 
         if (snapshot.exists()) {
-            selecionarListaSelect.innerHTML = "<option value=''>Selecione uma lista</option>"; // Limpa as opções existentes
+            selecionarListaSelect.innerHTML = "<option value=''>Selecione uma lista</option>";
+            const listas = snapshot.val();
 
-            const listas = snapshot.val(); // Obtém o valor do snapshot como um objeto
-
-            if (listas) {
-                for (const listaId in listas) {
-                    if (listas.hasOwnProperty(listaId)) {
-                        const lista = listas[listaId];
-                        const listaNome = lista.nome; // Assume que o nome da lista é 'nome'
-                        const option = document.createElement("option");
-                        option.value = listaId;
-                        option.textContent = listaNome;
-                        selecionarListaSelect.appendChild(option);
-                    }
-                }
+            for (const listaId in listas) {
+                const lista = listas[listaId];
+                const option = document.createElement("option");
+                option.value = listaId;
+                option.textContent = lista.nome;
+                selecionarListaSelect.appendChild(option);
             }
-        } else {
-            console.log("Nenhuma lista encontrada para o usuário.");
         }
     };
 
-    // Autenticação e carregamento das listas
     onAuthStateChanged(auth, (user) => {
         if (user) {
             carregarListas(user.uid);
 
-            // Evento de clique do botão "Compartilhar"
-            btnCompartilhar.addEventListener("click", () => {
-                const emailConvidado = emailConvidadoInput.value;
+            btnCompartilhar.addEventListener("click", async () => {
+                const emailConvidado = emailConvidadoInput.value.trim().toLowerCase();
                 const listaId = selecionarListaSelect.value;
 
-                if (emailConvidado && listaId) {
-                    compartilharLista(listaId, emailConvidado, user.uid);
-                } else {
-                    alert("Por favor, preencha o email do convidado e selecione uma lista.");
+                if (!emailConvidado || !listaId) {
+                    alert("Preencha o e-mail e selecione uma lista.");
+                    return;
+                }
+
+                try {
+                    // Buscar todos usuários para achar o convidado pelo email
+                    const usersRef = ref(db, 'users');
+                    const snapshot = await get(usersRef);
+
+                    if (!snapshot.exists()) {
+                        throw new Error("Nenhum usuário encontrado no banco.");
+                    }
+
+                    let convidadoId = null;
+                    snapshot.forEach((child) => {
+                        const userData = child.val();
+                        if (userData?.email?.toLowerCase() === emailConvidado) {
+                            convidadoId = child.key;
+                        }
+                    });
+
+                    if (!convidadoId) {
+                        alert("Usuário com esse e-mail não foi encontrado.");
+                        return;
+                    }
+
+                    const convidadoRef = ref(db, `users/${user.uid}/listas/${listaId}/convidados/${convidadoId}`);
+                    await set(convidadoRef, true);
+
+                    alert("Lista compartilhada com sucesso!");
+                    emailConvidadoInput.value = "";
+                    selecionarListaSelect.value = "";
+
+                } catch (error) {
+                    console.error("Erro completo:", error);
+                    console.error("Mensagem do erro:", error?.message || error);
+                    alert("Erro ao compartilhar lista: " + (error?.message || error));
                 }
             });
         } else {
-            console.log("Usuário não está logado.");
-            alert("Você precisa estar logado para compartilhar listas.");
-            window.location.href = "login.html"; // Redireciona para a página de login
+            alert("Você precisa estar logado.");
+            window.location.href = "login.html";
         }
     });
-
-    // Função para compartilhar a lista
-    const compartilharLista = async (listaId, emailConvidado, donoId) => {
-        try {
-            // 1. Encontrar o userId do convidado pelo email
-            const usuariosRef = ref(db, 'users');
-            const snapshot = await get(usuariosRef);
-            let convidadoId = null;
-            snapshot.forEach((childSnapshot) => {
-                if (childSnapshot.val().email === emailConvidado) {
-                    convidadoId = childSnapshot.key;
-                }
-            });
-
-            if (!convidadoId) {
-                alert("Usuário com este email não encontrado.");
-                return;
-            }
-
-            // 2. Adicionar a lista em listas_compartilhadas
-            const listaCompartilhadaRef = ref(db, `listas_compartilhadas/${listaId}/convidados/${convidadoId}`);
-            await set(listaCompartilhadaRef, true); // Ou você pode armazenar mais detalhes aqui
-
-            // Adicionar o dono também, caso não exista
-            const listaCompartilhadaDonoRef = ref(db, `listas_compartilhadas/${listaId}/dono_id`);
-            await set(listaCompartilhadaDonoRef, donoId);
-
-            // 3. Adicionar a lista em convidados
-            const convidadoListaRef = ref(db, `convidados/${convidadoId}/listas_compartilhadas/${listaId}`);
-            await set(convidadoListaRef, true);
-
-            alert("Lista compartilhada com sucesso!");
-            emailConvidadoInput.value = "";
-            selecionarListaSelect.value = "";
-
-        } catch (error) {
-            console.error("Erro ao compartilhar lista:", error);
-            alert("Erro ao compartilhar lista: " + error.message);
-        }
-    };
 });
