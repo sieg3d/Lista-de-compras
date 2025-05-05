@@ -4,93 +4,99 @@ import { getDatabase, ref, get, set } from "https://www.gstatic.com/firebasejs/1
 
 // Configuração do Firebase
 const firebaseConfig = {
-    apiKey: "AIzaSyA8cXYQ4m-uyEjbJJF_1_4Re8RJvqo1DWE",
-    authDomain: "dlopes-lasalle-2025.firebaseapp.com",
-    projectId: "dlopes-lasalle-2025",
-    storageBucket: "dlopes-lasalle-2025.appspot.com",
-    messagingSenderId: "91491434656",
-    appId: "1:91491434656:web:8a083bf3df35b5e18949c5",
+  apiKey: "AIzaSyA8cXYQ4m-uyEjbJJF_1_4Re8RJvqo1DWE",
+  authDomain: "dlopes-lasalle-2025.firebaseapp.com",
+  projectId: "dlopes-lasalle-2025",
+  storageBucket: "dlopes-lasalle-2025.appspot.com",
+  messagingSenderId: "91491434656",
+  appId: "1:91491434656:web:8a083bf3df35b5e18949c5",
 };
 
-// Inicializa Firebase
-const app = initializeApp(firebaseConfig);
+const app  = initializeApp(firebaseConfig);
 const auth = getAuth(app);
-const db = getDatabase(app);
+const db   = getDatabase(app);
 
 document.addEventListener("DOMContentLoaded", () => {
-    const emailConvidadoInput = document.getElementById("email_convidado");
-    const selecionarListaSelect = document.getElementById("selecionar_lista");
-    const btnCompartilhar = document.getElementById("btn_compartilhar");
+  const emailInput    = document.getElementById("email_convidado");
+  const listaSelect   = document.getElementById("selecionar_lista");
+  const btnCompart    = document.getElementById("btn_compartilhar");
+  const nomeUsuarioEl = document.getElementById("nome-usuario-nav");
 
-    const carregarListas = async (userId) => {
-        const listasRef = ref(db, `users/${userId}/listas`);
-        const snapshot = await get(listasRef);
+  // Carrega as listas do usuário logado
+  async function carregarListas(uid) {
+    const snap = await get(ref(db, `users/${uid}/listas`));
+    listaSelect.innerHTML = "<option value=''>Selecione uma lista</option>";
+    if (snap.exists()) {
+      Object.entries(snap.val()).forEach(([id, lista]) => {
+        const opt = document.createElement("option");
+        opt.value       = id;
+        opt.textContent = lista.nome;
+        listaSelect.appendChild(opt);
+      });
+    }
+  }
 
-        if (snapshot.exists()) {
-            selecionarListaSelect.innerHTML = "<option value=''>Selecione uma lista</option>";
-            const listas = snapshot.val();
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+      alert("Você precisa estar logado.");
+      return window.location.href = "login.html";
+    }
 
-            for (const listaId in listas) {
-                const lista = listas[listaId];
-                const option = document.createElement("option");
-                option.value = listaId;
-                option.textContent = lista.nome;
-                selecionarListaSelect.appendChild(option);
-            }
+    // 1) Atualiza índice emailToUid
+    const emailKey = user.email.trim().toLowerCase().replace(/\./g, ",");
+    await set(ref(db, `emailToUid/${emailKey}`), user.uid);
+
+    // 2) Exibe nome no nav
+    const nomeSnap = await get(ref(db, `users/${user.uid}/nome`));
+    nomeUsuarioEl.textContent = nomeSnap.exists() ? nomeSnap.val() : "Usuário";
+
+    // 3) Carrega listas e configura botão de compartilhar
+    await carregarListas(user.uid);
+
+    btnCompart.addEventListener("click", async () => {
+      const rawEmail = emailInput.value.trim().toLowerCase();
+      const listaId  = listaSelect.value;
+
+      if (!rawEmail || !listaId) {
+        alert("Preencha o e-mail e selecione uma lista.");
+        return;
+      }
+
+      try {
+        // busca UID do convidado no índice
+        const guestKey = rawEmail.replace(/\./g, ",");
+        const guestSnap = await get(ref(db, `emailToUid/${guestKey}`));
+        if (!guestSnap.exists()) {
+          alert("Usuário com esse e-mail não foi encontrado.");
+          return;
         }
-    };
+        const convidadoId = guestSnap.val();
 
-    onAuthStateChanged(auth, (user) => {
-        if (user) {
-            carregarListas(user.uid);
+        // 4) Grava convite no nó do dono
+        await set(
+          ref(db, `users/${user.uid}/listas/${listaId}/convidados/${convidadoId}`),
+          true
+        );
+        // 5) Atualiza índice de compartilhamentos para o convidado
+        await set(
+          ref(db, `sharedListsForUser/${convidadoId}/${user.uid}/${listaId}`),
+          true
+        );
 
-            btnCompartilhar.addEventListener("click", async () => {
-                const emailConvidado = emailConvidadoInput.value.trim().toLowerCase();
-                const listaId = selecionarListaSelect.value;
+        alert("Lista compartilhada com sucesso!");
+        emailInput.value  = "";
+        listaSelect.value = "";
 
-                if (!emailConvidado || !listaId) {
-                    alert("Preencha o e-mail e selecione uma lista.");
-                    return;
-                }
-
-                try {
-                    // Buscar todos usuários para achar o convidado pelo email
-                    const usersRef = ref(db, 'users');
-                    const snapshot = await get(usersRef);
-
-                    if (!snapshot.exists()) {
-                        throw new Error("Nenhum usuário encontrado no banco.");
-                    }
-
-                    let convidadoId = null;
-                    snapshot.forEach((child) => {
-                        const userData = child.val();
-                        if (userData?.email?.toLowerCase() === emailConvidado) {
-                            convidadoId = child.key;
-                        }
-                    });
-
-                    if (!convidadoId) {
-                        alert("Usuário com esse e-mail não foi encontrado.");
-                        return;
-                    }
-
-                    const convidadoRef = ref(db, `users/${user.uid}/listas/${listaId}/convidados/${convidadoId}`);
-                    await set(convidadoRef, true);
-
-                    alert("Lista compartilhada com sucesso!");
-                    emailConvidadoInput.value = "";
-                    selecionarListaSelect.value = "";
-
-                } catch (error) {
-                    console.error("Erro completo:", error);
-                    console.error("Mensagem do erro:", error?.message || error);
-                    alert("Erro ao compartilhar lista: " + (error?.message || error));
-                }
-            });
-        } else {
-            alert("Você precisa estar logado.");
-            window.location.href = "login.html";
-        }
+      } catch (err) {
+        console.error("Erro ao compartilhar lista:", err);
+        alert("Erro ao compartilhar lista: " + err.message);
+      }
     });
+  });
 });
+
+// Função para togglar menu mobile
+function menu() {
+  const x = document.getElementById("myLinks");
+  x.style.display = x.style.display === "block" ? "none" : "block";
+}

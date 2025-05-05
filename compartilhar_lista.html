@@ -1,55 +1,57 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <title>Compartilhar Lista</title>
-    <script type="module" src="js/compartilhar_lista.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Compartilhar Lista</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
-    <div class="mobile-container">
-        <div class="topnav">
-            <a href="index.html" class="active">
-                <img src="Imagens/logo.png" id="logo"> Olá, <span id="nome-usuario-nav"></span>!
-            </a>
-            <a href="#" class="notification">
-                <i class="fa fa-bell"></i>
-                <span class="badge">3</span>
-            </a>
-            <a href="javascript:void(0);" class="icon" onclick="menu()">
-                <i class="fa fa-bars"></i>
-            </a>
-            <div id="myLinks">
-                <a href="cadastrar_produto.html">Cadastrar Produtos</a>
-                <a href="estoque.html">Estoque</a>
-                <a href="#">Sair</a>
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="header">
-                <a href="index.html" class="back-btn"><i class="fa fa-arrow-left"></i></a>
-                <h2>Compartilhar Lista</h2>
-            </div>
-
-            <label for="email_convidado">Email do Convidado:</label>
-            <input type="email" id="email_convidado" placeholder="Digite o email do convidado">
-
-            <label for="selecionar_lista">Selecionar Lista:</label>
-            <select id="selecionar_lista">
-                <option value="">Selecione uma lista</option>
-                </select>
-
-            <button id="btn_compartilhar" class="btn-login">Compartilhar</button>
-        </div>
+  <div class="mobile-container">
+    <div class="topnav">
+      <a href="index.html" class="active">
+        <img src="Imagens/logo.png" id="logo">
+        Olá, <span id="nome-usuario-nav"></span>!
+      </a>
+      <a href="#" class="notification">
+        <i class="fa fa-bell"></i><span class="badge">3</span>
+      </a>
+      <a href="javascript:void(0);" class="icon" onclick="menu()">
+        <i class="fa fa-bars"></i>
+      </a>
+      <div id="myLinks">
+        <a href="cadastrar_produto.html">Cadastrar Produtos</a>
+        <a href="estoque.html">Estoque</a>
+        <a href="#">Sair</a>
+      </div>
     </div>
 
-    <footer class="footer">
-        <p>© 2025 GHEmpresas - Todos os direitos reservados.</p>
-    </footer>
+    <div class="container">
+      <div class="header">
+        <a href="index.html" class="back-btn">
+          <i class="fa fa-arrow-left"></i>
+        </a>
+        <h2>Compartilhar Lista</h2>
+      </div>
 
-    <script type="module" src="js/compartilhar_lista.js"></script>
+      <label for="email_convidado">Email do Convidado:</label>
+      <input type="email" id="email_convidado" placeholder="Digite o email do convidado">
+
+      <label for="selecionar_lista">Selecionar Lista:</label>
+      <select id="selecionar_lista">
+        <option value="">Selecione uma lista</option>
+      </select>
+
+      <button id="btn_compartilhar" class="btn-login">Compartilhar</button>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>© 2025 GHEmpresas - Todos os direitos reservados.</p>
+  </footer>
+
+  <script type="module" src="js/compartilhar_lista.js"></script>
 </body>
 </html>

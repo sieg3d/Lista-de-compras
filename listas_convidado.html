@@ -1,70 +1,67 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <title>Listas Compartilhadas</title>
-    <script type="module" src="js/listas_convidado.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Listas Compartilhadas</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
-
 <body>
-    <div class="mobile-container">
-        <div class="topnav">
-            <a href="index.html" class="active">
-                <img src="Imagens/logo.png" id="logo"> Olá, <span id="nome-usuario-nav"></span>!
-            </a>
-            <a href="#" class="notification">
-                <i class="fa fa-bell"></i>
-                <span class="badge">3</span>
-            </a>
-            <a href="javascript:void(0);" class="icon" onclick="menu()">
-                <i class="fa fa-bars"></i>
-            </a>
-            <div id="myLinks">
-                <a href="cadastrar_produto.html">Cadastrar Produtos</a>
-                <a href="estoque.html">Estoque</a>
-                <a href="#">Sair</a>
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="header">
-                <a href="index.html" class="back-btn"><i class="fa fa-arrow-left"></i></a>
-                <h2>Listas Compartilhadas</h2>
-            </div>
-
-            <div class="search-container">
-                <select id="selectListasConvidado">
-                    <option value="">Selecione uma lista</option>
-                </select>
-            </div>
-
-            <div id="detalhesLista">
-            </div>
-
-            <button id="adicionarProdutoBtn">Adicionar Produto</button>
-            <button id="salvarAlteracoesBtn">Salvar Alterações</button>
-
-            <div id="novoProdutoForm" style="display: none;">
-                <h3>Adicionar Novo Produto</h3>
-                <label for="produtoSelect">Produto:</label>
-                <select id="produtoSelect"></select>
-                <label for="quantidadeInput">Quantidade:</label>
-                <input type="number" id="quantidadeInput" value="1">
-                <button id="adicionarItemBtn">Adicionar Item</button>
-                <button id="cancelarAdicaoBtn">Cancelar</button>
-            </div>
-        </div>
+  <div class="mobile-container">
+    <div class="topnav">
+      <a href="index.html" class="active">
+        <img src="Imagens/logo.png" id="logo">
+        Olá, <span id="nome-usuario-nav"></span>!
+      </a>
+      <a href="#" class="notification">
+        <i class="fa fa-bell"></i><span class="badge">3</span>
+      </a>
+      <a href="javascript:void(0);" class="icon" onclick="menu()">
+        <i class="fa fa-bars"></i>
+      </a>
+      <div id="myLinks">
+        <a href="cadastrar_produto.html">Cadastrar Produtos</a>
+        <a href="estoque.html">Estoque</a>
+        <a href="#">Sair</a>
+      </div>
     </div>
 
-    <footer class="footer">
-        <p>© 2025 GHEmpresas - Todos os direitos reservados.</p>
-    </footer>
+    <div class="container">
+      <div class="header">
+        <a href="index.html" class="back-btn"><i class="fa fa-arrow-left"></i></a>
+        <h2>Listas Compartilhadas</h2>
+      </div>
 
-    <script type="module" src="js/listas_convidado.js"></script>
+      <div class="search-container">
+        <select id="selectListasConvidado">
+          <option value="">Selecione uma lista</option>
+        </select>
+      </div>
+
+      <div id="detalhesLista"></div>
+
+      <!-- Botões de edição ficam ocultos para convidado -->
+      <button id="adicionarProdutoBtn" style="display:none;">Adicionar Produto</button>
+      <button id="salvarAlteracoesBtn" style="display:none;">Salvar Alterações</button>
+
+      <div id="novoProdutoForm" style="display: none;">
+        <h3>Adicionar Novo Produto</h3>
+        <label for="produtoSelect">Produto:</label>
+        <select id="produtoSelect"></select>
+        <label for="quantidadeInput">Quantidade:</label>
+        <input type="number" id="quantidadeInput" value="1">
+        <button id="adicionarItemBtn">Adicionar Item</button>
+        <button id="cancelarAdicaoBtn">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>© 2025 GHEmpresas - Todos os direitos reservados.</p>
+  </footer>
+
+  <script type="module" src="js/listas_convidado.js"></script>
 </body>
-
 </html>
