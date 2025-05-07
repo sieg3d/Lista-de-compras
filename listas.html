@@ -5,68 +5,72 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
   <title>Visualizar Lista</title>
 </head>
-
 <body>
-  <div id="modalMessage" style="display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#4CAF50; color:white; padding:10px 20px; border-radius:10px; z-index:9999; font-size:18px;">
+  <div id="modalMessage" style="display:none;
+       position:fixed; top:20px; left:50%;
+       transform:translateX(-50%);
+       background:#4CAF50; color:white;
+       padding:10px 20px; border-radius:10px;
+       z-index:9999; font-size:18px;">
     <span id="modalText"></span>
   </div>
 
   <div class="mobile-container">
-        <div class="topnav">
-            <a href="index.html" class="active">
-                <img src="Imagens/logo.png" id="logo"> Olá, <span id="nome-usuario-nav"></span>!
-            </a>
-            <a href="#" class="notification">
-                <i class="fa fa-bell"></i>
-                <span class="badge">3</span>
-            </a>
-            <a href="javascript:void(0);" class="icon" onclick="menu()">
-                <i class="fa fa-bars"></i>
-            </a>
-            <div id="myLinks">
-                <a href="cadastrar_produto.html">Cadastrar Produtos</a>
-                <a href="#">Estoque</a>
-                <a href="#">Sair</a>
-            </div>
-        </div>
-
-        <div class="container">
-            <div class="header">
-                <a href="index.html" class="back-btn"><i class="fa fa-arrow-left"></i></a>
-                <h2>Visualizar Lista</h2>
-            </div>
-
-            <div class="search-container">
-                <select id="selectListas">
-                    <option value="">Selecione uma lista</option>
-                </select>
-            </div>
-
-            <div id="detalhesLista">
-                </div>
-
-            <button id="adicionarProdutoBtn">Adicionar Produto</button>
-            <button id="salvarAlteracoesBtn">Salvar Alterações</button>
-
-            <div id="novoProdutoForm" style="display: none;">
-                <h3>Adicionar Novo Produto</h3>
-                <label for="produtoSelect">Produto:</label>
-                <select id="produtoSelect"></select>
-                <label for="quantidadeInput">Quantidade:</label>
-                <input type="number" id="quantidadeInput" value="1">
-                <button id="adicionarItemBtn">Adicionar Item</button>
-                <button id="cancelarAdicaoBtn">Cancelar</button>
-            </div>
-        </div>
+    <div class="topnav">
+      <a href="index.html" class="active">
+        <img src="Imagens/logo.png" id="logo"> Olá, <span id="nome-usuario-nav"></span>!
+      </a>
+      <a href="#" class="notification">
+        <i class="fa fa-bell"></i><span class="badge">3</span>
+      </a>
+      <a href="javascript:void(0);" class="icon" onclick="menu()">
+        <i class="fa fa-bars"></i>
+      </a>
+      <div id="myLinks">
+        <a href="cadastrar_produto.html">Cadastrar Produtos</a>
+        <a href="#">Estoque</a>
+        <a href="#">Sair</a>
+      </div>
     </div>
 
-    <footer class="footer">
-        <p>© 2025 GHEmpresas - Todos os direitos reservados.</p>
-      </footer>
-    
-      <script type="module" src="js/listas.js"></script>
-    </body>
-    </html>
+    <div class="container">
+      <div class="header">
+        <a href="index.html" class="back-btn"><i class="fa fa-arrow-left"></i></a>
+        <h2>Visualizar Lista</h2>
+      </div>
+
+      <div class="search-container">
+        <select id="selectListas">
+          <option value="">Selecione uma lista</option>
+        </select>
+      </div>
+
+      <div id="detalhesLista"></div>
+
+      <!-- só aparecem após escolher lista -->
+      <button id="adicionarProdutoBtn" style="display:none;">Adicionar Produto</button>
+      <button id="finalizarCompraBtn" style="display:none;">Finalizar Compra</button>
+
+      <div id="novoProdutoForm" style="display: none;">
+        <h3>Adicionar Novo Produto</h3>
+        <label for="produtoSelect">Produto:</label>
+        <select id="produtoSelect"></select>
+        <label for="quantidadeInput">Quantidade:</label>
+        <input type="number" id="quantidadeInput" value="1" min="1">
+        <button id="adicionarItemBtn">Adicionar Item</button>
+        <button id="cancelarAdicaoBtn">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>© 2025 GHEmpresas - Todos os direitos reservados.</p>
+  </footer>
+
+  <script type="module" src="js/listas.js"></script>
+</body>
+</html>

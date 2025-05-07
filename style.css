@@ -532,3 +532,8 @@ tbody tr:nth-child(even) {
 .btn-login:hover {
     background-color: #5e0226;
 }
+
+#adicionarProdutoBtn,
+#salvarAlteracoesBtn {
+    display: none;
+}
