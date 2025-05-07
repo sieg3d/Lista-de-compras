@@ -7,10 +7,9 @@
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-  <title>Visualizar Lista</title>
+  <title>Copiar Lista</title>
 </head>
 <body>
-  <!-- Modal de feedback -->
   <div id="modalMessage" style="display:none;
        position:fixed; top:20px; left:50%;
        transform:translateX(-50%);
@@ -21,7 +20,6 @@
   </div>
 
   <div class="mobile-container">
-    <!-- Top navigation -->
     <div class="topnav">
       <a href="index.html" class="active">
         <img src="Imagens/logo.png" id="logo"> Olá, <span id="nome-usuario-nav"></span>!
@@ -33,17 +31,17 @@
         <i class="fa fa-bars"></i>
       </a>
       <div id="myLinks">
-        <a href="cadastrar_produto.html">Cadastrar Produtos</a>
-        <a href="#">Estoque</a>
-        <a href="#">Sair</a>
+        <a href="index.html">Início</a>
+        <a href="listas.html">Minhas Listas</a>
+        <a href="criar_lista.html">Criar Lista</a>
+        <a href="logout.html">Sair</a>
       </div>
     </div>
 
-    <!-- Conteúdo principal -->
     <div class="container">
       <div class="header">
-        <a href="index.html" class="back-btn"><i class="fa fa-arrow-left"></i></a>
-        <h2>Visualizar Lista</h2>
+        <a href="listas.html" class="back-btn"><i class="fa fa-arrow-left"></i></a>
+        <h2>Copiar Lista</h2>
       </div>
 
       <div class="search-container" style="display:block;">
@@ -53,41 +51,22 @@
         </select>
       </div>
 
-      <div id="detalhesLista"></div>
-
-      <!-- Botões de ação -->
-      <div class="button-container">
-        <button id="adicionarProdutoBtn" class="btn-login" style="display:none;">Adicionar Produto</button>
-        <button id="finalizarCompraBtn" class="btn-login" style="display:none;">Finalizar Compra</button>
-      </div>
-
-      <!-- Formulário de adicionar item -->
-      <div id="novoProdutoForm" style="display: none;">
-        <h3>Adicionar Novo Produto</h3>
-        <label for="produtoSelect">Produto:</label>
-        <select id="produtoSelect"></select>
-        <label for="quantidadeInput">Quantidade:</label>
-        <input type="number" id="quantidadeInput" value="1" min="1">
-        <div class="button-container">
-        <button id="adicionarItemBtn" class="btn-login">Adicionar Item</button>
-        <button id="cancelarAdicaoBtn" class="btn-login">Cancelar</button>
-      </div>
+      <div class="button-container full-width">
+        <button id="copiarListaBtn" class="btn-login" style="display:none; width:80%; max-width:200px;">Copiar Lista</button>
       </div>
     </div>
   </div>
 
-  <!-- Footer sempre ao final -->
   <footer class="footer">
     <p>© 2025 GHEmpresas - Todos os direitos reservados.</p>
   </footer>
 
   <script>
-    // Toggle do menu mobile
     function menu() {
       const nav = document.getElementById('myLinks');
       nav.style.display = nav.style.display === 'block' ? 'none' : 'block';
     }
   </script>
-  <script type="module" src="js/listas.js"></script>
+  <script type="module" src="js/copiar_lista.js"></script>
 </body>
 </html>
