@@ -1,6 +1,6 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { getDatabase, ref, get, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 // Configuração do Firebase
 const firebaseConfig = {
@@ -17,48 +17,101 @@ const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
 
-function carregarProdutos(user) {
-    const tabelaBody = document.querySelector(".estoque-table tbody");
-    tabelaBody.innerHTML = "";
+// tenta remover o produto, só se ele não estiver em nenhuma lista
+async function removerProduto(user, produtoId) {
+  const uid = user.uid;
+  const listasSnap = await get(ref(db, `users/${uid}/listas`));
 
-    if (user) {
-        const uid = user.uid;
-        const produtosRef = ref(db, `users/${uid}/produtos`);
-        get(produtosRef)
-            .then((snapshot) => {
-                if (snapshot.exists()) {
-                    const produtos = snapshot.val();
-                    console.log("Dados recuperados:", produtos);
-
-                    for (const key in produtos) {
-                        const produto = produtos[key];
-                        console.log("Produto:", produto);
-
-                        const row = `
-                            <tr>
-                                <td>${produto.nome}</td>
-                                <td>${produto.estoque_inicial}</td>
-                            </tr>
-                        `;
-                        tabelaBody.innerHTML += row;
-                    }
-                } else {
-                    console.log("Nenhum dado encontrado para este usuário.");
-                    tabelaBody.innerHTML = "<tr><td colspan='2'>Nenhum produto cadastrado.</td></tr>";
-                }
-            })
-            .catch((error) => {
-                console.error("Erro ao carregar produtos:", error);
-                tabelaBody.innerHTML = "<tr><td colspan='2'>Erro ao carregar produtos.</td></tr>";
-            });
-    } else {
-        console.log("Nenhum usuário logado.");
-        tabelaBody.innerHTML = "<tr><td colspan='2'>Você precisa estar logado para ver o estoque.</td></tr>";
+  if (listasSnap.exists()) {
+    const listas = listasSnap.val();
+    for (const listaId in listas) {
+      const lista = listas[listaId];
+      if (lista.itens) {
+        for (const itemKey in lista.itens) {
+          if (lista.itens[itemKey].produtoId === produtoId) {
+            return alert(
+              `Não é possível remover. Produto presente na lista “${lista.nome}”.`
+            );
+          }
+        }
+      }
     }
+  }
+
+  try {
+    await remove(ref(db, `users/${uid}/produtos/${produtoId}`));
+    alert("Produto removido com sucesso!");
+    carregarProdutos(user);
+  } catch (error) {
+    console.error("Erro ao remover produto:", error);
+    alert("Erro ao remover produto.");
+  }
+}
+
+function carregarProdutos(user) {
+  const tabelaBody = document.querySelector(".estoque-table tbody");
+  tabelaBody.innerHTML = "";
+
+  if (!user) {
+    tabelaBody.innerHTML =
+      "<tr><td colspan='3'>Você precisa estar logado para ver o estoque.</td></tr>";
+    return;
+  }
+
+  const uid = user.uid;
+  const produtosRef = ref(db, `users/${uid}/produtos`);
+  get(produtosRef)
+    .then((snapshot) => {
+      if (!snapshot.exists()) {
+        tabelaBody.innerHTML =
+          "<tr><td colspan='3'>Nenhum produto cadastrado.</td></tr>";
+        return;
+      }
+
+      const produtos = snapshot.val();
+      for (const key in produtos) {
+        const { nome, estoque_inicial } = produtos[key];
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${nome}</td>
+          <td>${estoque_inicial}</td>
+          <td>
+<button
+  class="btn-remover"
+  data-prodid="${key}"
+  style="
+    border: none !important;
+    background: transparent !important;
+    padding: 0;
+    cursor: pointer;
+  "
+>
+  <img src="Imagens/lixo.png" alt="Remover" style="width:20px;height:20px;">
+</button>
+          </td>
+        `;
+        tabelaBody.appendChild(row);
+      }
+
+      // adiciona listener para cada lixeira
+      tabelaBody.querySelectorAll(".btn-remover").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const produtoId = btn.dataset.prodid;
+          if (confirm("Deseja realmente remover este produto?")) {
+            removerProduto(user, produtoId);
+          }
+        });
+      });
+    })
+    .catch((error) => {
+      console.error("Erro ao carregar produtos:", error);
+      tabelaBody.innerHTML =
+        "<tr><td colspan='3'>Erro ao carregar produtos.</td></tr>";
+    });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    onAuthStateChanged(auth, (user) => {
-        carregarProdutos(user);
-    });
+  onAuthStateChanged(auth, (user) => {
+    carregarProdutos(user);
+  });
 });

@@ -52,6 +52,9 @@ async function exibirDetalhesLista(user, listaId) {
   }
 
   const lista = snap.val();
+  const finalizada = lista.status === "finalizada";
+
+  // monta tabela de itens, desabilitando checkbox se finalizada
   let html = `
     <table class="lista-table">
       <thead>
@@ -71,7 +74,8 @@ async function exibirDetalhesLista(user, listaId) {
             type="checkbox"
             class="concluido-checkbox"
             data-item-key="${itemKey}"
-            ${item.concluido ? "checked" : ""}>
+            ${item.concluido ? "checked" : ""}
+            ${finalizada ? "disabled" : ""}>
         </td>
       </tr>
     `;
@@ -81,25 +85,40 @@ async function exibirDetalhesLista(user, listaId) {
       </tbody>
     </table>
   `;
-
   container.innerHTML = html;
 
-  container.querySelectorAll(".concluido-checkbox").forEach(cb => {
-    cb.addEventListener("change", async e => {
-      const marcado = e.target.checked;
-      const itemKey = e.target.dataset.itemKey;
-      try {
-        await update(
-          ref(db, `users/${user.uid}/listas/${listaId}/itens/${itemKey}`),
-          { concluido: marcado }
-        );
-        showModal("Item atualizado!");
-      } catch {
-        e.target.checked = !marcado;
-        showModal("Erro ao atualizar item.", false);
-      }
+  // controla visibilidade de botões e formulário
+  const btnAdd = document.getElementById("adicionarProdutoBtn");
+  const btnFinish = document.getElementById("finalizarCompraBtn");
+  const formAdd = document.getElementById("novoProdutoForm");
+  if (finalizada) {
+    btnAdd.style.display = "none";
+    btnFinish.style.display = "none";
+    formAdd.style.display = "none";
+  } else {
+    btnAdd.style.display = "inline-block";
+    btnFinish.style.display = "inline-block";
+  }
+
+  // listener para checkbox de concluído (só se não finalizada)
+  if (!finalizada) {
+    container.querySelectorAll(".concluido-checkbox").forEach(cb => {
+      cb.addEventListener("change", async e => {
+        const marcado = e.target.checked;
+        const itemKey = e.target.dataset.itemKey;
+        try {
+          await update(
+            ref(db, `users/${user.uid}/listas/${listaId}/itens/${itemKey}`),
+            { concluido: marcado }
+          );
+          showModal("Item atualizado!");
+        } catch {
+          e.target.checked = !marcado;
+          showModal("Erro ao atualizar item.", false);
+        }
+      });
     });
-  });
+  }
 }
 
 function mostrarFormAdicionar() {
@@ -153,7 +172,6 @@ onAuthStateChanged(auth, async user => {
     if (listaId) {
       currentListaId = listaId;
       exibirDetalhesLista(user, listaId);
-      btnAdd.style.display = btnFinish.style.display = "inline-block";
     } else {
       document.getElementById("detalhesLista").innerHTML = "";
       btnAdd.style.display = btnFinish.style.display = "none";
@@ -192,13 +210,13 @@ onAuthStateChanged(auth, async user => {
       return;
     }
 
-    // Prepara updates: soma ao estoque atual
+    // Prepara updates: soma ao estoque atual e atualiza status
     const updates = {};
     Object.entries(somaPorProduto).forEach(([pid, somaQtd]) => {
       const atual = produtosUsuario[pid]?.estoque_inicial || 0;
       updates[`users/${user.uid}/produtos/${pid}/estoque_inicial`] = atual + somaQtd;
     });
-    updates[`users/${user.uid}/listas/${currentListaId}/finalizada`] = true;
+    updates[`users/${user.uid}/listas/${currentListaId}/status`] = "finalizada";
 
     try {
       await update(ref(db), updates);

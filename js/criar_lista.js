@@ -163,15 +163,25 @@ function salvarLista(user) {
         const nomeListaComData = `${nomeLista} - ${dataFormatada}`;
 
         const novaListaRef = push(listasRef);
+        // set(novaListaRef, {
+        //     nome: nomeListaComData,
+        //     itens: itensLista,
+        //     data_criacao: dataAtual.toISOString()
+        // })
+        // .then(() => {
+        //     alert("Lista salva com sucesso!");
+        //     window.location.href = "index.html";
+        // })
         set(novaListaRef, {
-            nome: nomeListaComData,
-            itens: itensLista,
-            data_criacao: dataAtual.toISOString()
-        })
-        .then(() => {
-            alert("Lista salva com sucesso!");
-            window.location.href = "index.html";
-        })
+                nome: nomeListaComData,
+                itens: itensLista,
+                data_criacao: dataAtual.toISOString(),
+                status: "em andamento"     //status inicial
+            })
+                 .then(() => {
+                     alert("Lista salva com sucesso!");
+                     window.location.href = "index.html";
+                 })
         .catch((error) => {
             console.error("Erro ao salvar lista:", error);
             alert("Erro ao salvar lista: " + error.message);
