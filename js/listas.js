@@ -5,13 +5,15 @@ import {
   ref,
   get,
   push,
-  update
+  update,
+  remove
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 let produtosUsuario = {};
+let listasUsuario = {};
 let currentListaId = "";
 
 function showModal(message, success = true) {
@@ -32,12 +34,15 @@ async function carregarListas(user) {
   const sel = document.getElementById("selectListas");
   sel.innerHTML = `<option value="">Selecione uma lista</option>`;
   if (snap.exists()) {
-    Object.entries(snap.val()).forEach(([listaId, listaObj]) => {
+    listasUsuario = snap.val();
+    Object.entries(listasUsuario).forEach(([listaId, listaObj]) => {
       const opt = document.createElement("option");
       opt.value = listaId;
       opt.textContent = listaObj.nome;
       sel.appendChild(opt);
     });
+  } else {
+    listasUsuario = {};
   }
 }
 
@@ -54,7 +59,6 @@ async function exibirDetalhesLista(user, listaId) {
   const lista = snap.val();
   const finalizada = lista.status === "finalizada";
 
-  // monta tabela de itens, desabilitando checkbox se finalizada
   let html = `
     <table class="lista-table">
       <thead>
@@ -87,7 +91,6 @@ async function exibirDetalhesLista(user, listaId) {
   `;
   container.innerHTML = html;
 
-  // controla visibilidade de botões e formulário
   const btnAdd = document.getElementById("adicionarProdutoBtn");
   const btnFinish = document.getElementById("finalizarCompraBtn");
   const formAdd = document.getElementById("novoProdutoForm");
@@ -100,7 +103,6 @@ async function exibirDetalhesLista(user, listaId) {
     btnFinish.style.display = "inline-block";
   }
 
-  // listener para checkbox de concluído (só se não finalizada)
   if (!finalizada) {
     container.querySelectorAll(".concluido-checkbox").forEach(cb => {
       cb.addEventListener("change", async e => {
@@ -157,6 +159,21 @@ function adicionarItem(user) {
     .catch(() => showModal("Erro ao adicionar item.", false));
 }
 
+async function removerLista(user) {
+  if (!confirm("Deseja realmente remover esta lista?")) return;
+  try {
+    await remove(ref(db, `users/${user.uid}/listas/${currentListaId}`));
+    showModal("Lista removida!");
+    document.getElementById("detalhesLista").innerHTML = "";
+    document.getElementById("adicionarProdutoBtn").style.display = "none";
+    document.getElementById("finalizarCompraBtn").style.display = "none";
+    document.getElementById("removerListaBtn").style.display = "none";
+    carregarListas(user);
+  } catch {
+    showModal("Erro ao remover lista.", false);
+  }
+}
+
 onAuthStateChanged(auth, async user => {
   if (!user) return;
 
@@ -166,15 +183,20 @@ onAuthStateChanged(auth, async user => {
   const select = document.getElementById("selectListas");
   const btnAdd = document.getElementById("adicionarProdutoBtn");
   const btnFinish = document.getElementById("finalizarCompraBtn");
+  const btnRemove = document.getElementById("removerListaBtn");
 
   select.addEventListener("change", e => {
     const listaId = e.target.value;
+    currentListaId = listaId;
     if (listaId) {
-      currentListaId = listaId;
       exibirDetalhesLista(user, listaId);
+      const lista = listasUsuario[listaId];
+      btnRemove.style.display = lista.status !== "finalizada"
+        ? "inline-block" : "none";
     } else {
       document.getElementById("detalhesLista").innerHTML = "";
       btnAdd.style.display = btnFinish.style.display = "none";
+      btnRemove.style.display = "none";
       esconderForm();
     }
   });
@@ -187,7 +209,6 @@ onAuthStateChanged(auth, async user => {
 
   btnFinish.addEventListener("click", async () => {
     if (!confirm("Deseja finalizar a compra?")) return;
-
     const itensSnap = await get(
       ref(db, `users/${user.uid}/listas/${currentListaId}/itens`)
     );
@@ -195,8 +216,6 @@ onAuthStateChanged(auth, async user => {
       showModal("Lista vazia.", false);
       return;
     }
-
-    // Agrupa quantidades por produto
     const somaPorProduto = {};
     itensSnap.forEach(itemSnap => {
       const it = itemSnap.val();
@@ -204,30 +223,29 @@ onAuthStateChanged(auth, async user => {
         somaPorProduto[it.produtoId] = (somaPorProduto[it.produtoId] || 0) + it.quantidade;
       }
     });
-
     if (Object.keys(somaPorProduto).length === 0) {
       showModal("Marque ao menos um item para finalizar.", false);
       return;
     }
-
-    // Prepara updates: soma ao estoque atual e atualiza status
     const updates = {};
     Object.entries(somaPorProduto).forEach(([pid, somaQtd]) => {
       const atual = produtosUsuario[pid]?.estoque_inicial || 0;
       updates[`users/${user.uid}/produtos/${pid}/estoque_inicial`] = atual + somaQtd;
     });
     updates[`users/${user.uid}/listas/${currentListaId}/status`] = "finalizada";
-
     try {
       await update(ref(db), updates);
       showModal("Compra finalizada e estoque atualizado!");
       document.getElementById("detalhesLista").innerHTML = "<p>Compra finalizada.</p>";
       btnAdd.style.display = btnFinish.style.display = "none";
+      document.getElementById("removerListaBtn").style.display = "none";
       esconderForm();
     } catch {
       showModal("Erro ao finalizar compra.", false);
     }
   });
+
+  btnRemove.addEventListener("click", () => removerLista(user));
 });
 
 // Toggle do menu mobile
