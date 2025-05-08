@@ -46,22 +46,37 @@
         <h2>Visualizar Lista</h2>
       </div>
 
+      <!-- Seleção de lista e botão Nova Lista -->
       <div class="search-container" style="display:block;">
-        <label for="selectListas" style="display:block; margin-bottom:8px;">Selecione uma lista:</label>
-        <select id="selectListas" style="width:100%;">
+        <label for="selectListas" style="display:block; margin-bottom:8px;">
+          Selecione uma lista:
+        </label>
+        <select id="selectListas" style="width:100%; margin-bottom:12px;">
           <option value="">-- Escolha uma lista --</option>
         </select>
+        <div style="display:flex; justify-content:center;">
+          <button
+            class="btn-login"
+            onclick="window.location.href='criar_lista.html'">
+            + Nova Lista
+          </button>
+        </div>
       </div>
 
+      <!-- Detalhes da lista selecionada -->
       <div id="detalhesLista"></div>
 
-      <!-- Botões de ação -->
+      <!-- Botões de ação para itens -->
       <div class="button-container">
-        <button id="adicionarProdutoBtn" class="btn-login" style="display:none;">Adicionar Produto</button>
-        <button id="finalizarCompraBtn" class="btn-login" style="display:none;">Finalizar Compra</button>
+        <button id="adicionarProdutoBtn" class="btn-login" style="display:none;">
+          Adicionar Produto
+        </button>
+        <button id="finalizarCompraBtn" class="btn-login" style="display:none;">
+          Finalizar Compra
+        </button>
       </div>
 
-      <!-- Formulário de adicionar item -->
+      <!-- Formulário de adicionar novo item -->
       <div id="novoProdutoForm" style="display: none;">
         <h3>Adicionar Novo Produto</h3>
         <label for="produtoSelect">Produto:</label>
@@ -69,14 +84,14 @@
         <label for="quantidadeInput">Quantidade:</label>
         <input type="number" id="quantidadeInput" value="1" min="1">
         <div class="button-container">
-        <button id="adicionarItemBtn" class="btn-login">Adicionar Item</button>
-        <button id="cancelarAdicaoBtn" class="btn-login">Cancelar</button>
-      </div>
+          <button id="adicionarItemBtn" class="btn-login">Adicionar Item</button>
+          <button id="cancelarAdicaoBtn" class="btn-login">Cancelar</button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Footer sempre ao final -->
+  <!-- Footer -->
   <footer class="footer">
     <p>© 2025 GHEmpresas - Todos os direitos reservados.</p>
   </footer>

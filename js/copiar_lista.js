@@ -1,102 +1,127 @@
+// js/copiar_lista.js
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 import {
-  getDatabase, ref, get, push, set
+  getDatabase,
+  ref,
+  get,
+  push,
+  set
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-// Configuração do Firebase (seu config aqui)
-const firebaseConfig = { /* … */ };
+// Configuração do Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyA8cXYQ4m-uyEjbJJF_1_4Re8RJvqo1DWE",
+  authDomain: "dlopes-lasalle-2025.firebaseapp.com",
+  projectId: "dlopes-lasalle-2025",
+  storageBucket: "dlopes-lasalle-2025.appspot.com",
+  messagingSenderId: "91491434656",
+  appId: "1:91491434656:web:8a083bf3df35b5e18949c5",
+};
+
+// Inicializa Firebase, Auth e Database
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
 const auth = getAuth(app);
+const db = getDatabase(app);
 
-let produtosUsuario = {};
+let listasUsuario = {}; // guardará as listas carregadas
 
-// Modal de feedback
+// Exibe mensagem de feedback
 function showModal(msg, ok = true) {
   const m = document.getElementById("modalMessage");
   m.style.background = ok ? "#4CAF50" : "#f44336";
   document.getElementById("modalText").innerText = msg;
   m.style.display = "block";
-  setTimeout(() => m.style.display = "none", 2500);
+  setTimeout(() => (m.style.display = "none"), 2000);
 }
 
-// Popula o select de produtos
-function popularSelectProdutos() {
-  const sel = document.createElement("select");
-  sel.classList.add("select-produto");
-  sel.appendChild(new Option("Selecione Produto", ""));
-  Object.entries(produtosUsuario).forEach(([id, p]) => {
-    sel.appendChild(new Option(p.nome, id));
-  });
-  return sel;
+// Formata Date para "DD/MM/YYYY"
+function formatDate(date) {
+  const d = String(date.getDate()).padStart(2, "0");
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const y = date.getFullYear();
+  return `${d}/${m}/${y}`;
 }
 
-// Adiciona linha na tabela
-function adicionarItemTabela() {
-  const tbody = document.querySelector(".lista-table tbody");
-  const last = tbody.lastElementChild;
-  if (last) {
-    const sel = last.querySelector(".select-produto");
-    if (!sel.value) {
-      showModal("Escolha o produto anterior antes de adicionar outro.", false);
-      return;
-    }
+// Carrega as listas do usuário e popula o <select>
+async function carregarListas(user) {
+  const snap = await get(ref(db, `users/${user.uid}/listas`));
+  const select = document.getElementById("selectListas");
+  select.innerHTML = `<option value="">-- Escolha uma lista --</option>`;
+
+  if (snap.exists()) {
+    listasUsuario = snap.val();
+    Object.entries(listasUsuario).forEach(([id, lista]) => {
+      const opt = document.createElement("option");
+      opt.value = id;
+      opt.textContent = lista.nome;
+      select.appendChild(opt);
+    });
+  } else {
+    listasUsuario = {};
   }
-  const tr = document.createElement("tr");
-  const td1 = document.createElement("td"); td1.appendChild(popularSelectProdutos());
-  const td2 = document.createElement("td");
-  const inp = document.createElement("input"); inp.type = "number"; inp.min = 1; inp.value = 1;
-  td2.appendChild(inp);
-  const td3 = document.createElement("td");
-  const btn = document.createElement("button"); btn.classList.add("btn-remover"); btn.textContent = "🗑️";
-  btn.onclick = () => tr.remove();
-  td3.appendChild(btn);
-  tr.append(td1, td2, td3);
-  tbody.appendChild(tr);
 }
 
-// Salva lista com status inicial = "andamento"
-async function salvarLista(user) {
-  const nome = document.getElementById("nome_lista").value.trim();
-  if (!nome) { showModal("Nome obrigatório.", false); return; }
-  const rows = document.querySelectorAll(".lista-table tbody tr");
-  if (!rows.length) { showModal("Adicione ao menos 1 item.", false); return; }
-
-  const itens = [];
-  for (const r of rows) {
-    const pid = r.querySelector(".select-produto").value;
-    const q = parseInt(r.querySelector("input").value);
-    if (!pid) { showModal("Produto pendente.", false); return; }
-    itens.push({ produtoId: pid, quantidade: q, concluido: false });
+// Duplica a lista selecionada, ajustando o nome com a data de hoje
+async function copiarLista(user) {
+  const sel = document.getElementById("selectListas");
+  const listaId = sel.value;
+  if (!listaId) {
+    showModal("Selecione uma lista para copiar.", false);
+    return;
   }
 
-  const now = new Date();
-  const nomeData = `${nome} - ${now.toLocaleDateString("pt-BR")}`;
-  const listRef = ref(db, `users/${user.uid}/listas`);
-  const newRef = push(listRef);
+  const lista = listasUsuario[listaId];
+  if (!lista) {
+    showModal("Lista não encontrada.", false);
+    return;
+  }
 
+  // Extrai baseName e data original (última parte após " - ")
+  const partes = lista.nome.split(" - ");
+  const originalDate = partes.length > 1 ? partes[partes.length - 1] : null;
+  const baseName =
+    partes.length > 1 ? partes.slice(0, -1).join(" - ") : lista.nome;
+
+  const hoje = new Date();
+  const hojeStr = formatDate(hoje);
+
+  // Impede cópia se já criada hoje
+  if (originalDate === hojeStr) {
+    showModal("Não é possível copiar a mesma lista no mesmo dia.", false);
+    return;
+  }
+
+  // Novo nome com data de hoje
+  const newName = `${baseName} - ${hojeStr}`;
+
+  // Cria a nova lista no banco
+  const newRef = push(ref(db, `users/${user.uid}/listas`));
   await set(newRef, {
-    nome: nomeData,
-    itens,
-    data_criacao: now.toISOString(),
-    status: "andamento"    // ← aqui
+    nome: newName,
+    itens: lista.itens || {},
+    data_criacao: hoje.toISOString(),
+    status: "andamento",
   });
 
-  showModal("Lista criada!", true);
-  setTimeout(() => location.href = "listas.html", 800);
+  showModal("Lista copiada com sucesso!");
 }
 
-// Carrega produtos ao autenticar
-onAuthStateChanged(auth, async user => {
-  if (!user) return;
-  const snap = await get(ref(db, `users/${user.uid}/produtos`));
-  produtosUsuario = snap.val() || {};
-});
+document.addEventListener("DOMContentLoaded", () => {
+  onAuthStateChanged(auth, async (user) => {
+    if (!user) return;
 
-// Event listeners
-document.getElementById("adicionar-item").onclick = adicionarItemTabela;
-document.getElementById("salvar-lista").onclick = () => {
-  const u = auth.currentUser;
-  u ? salvarLista(u) : showModal("Faça login para criar lista.", false);
-};
+    // Popula dropdown e gerencia botão
+    await carregarListas(user);
+    const sel = document.getElementById("selectListas");
+    const btn = document.getElementById("copiarListaBtn");
+    btn.style.display = "none";
+
+    sel.addEventListener("change", () => {
+      btn.style.display = sel.value ? "inline-block" : "none";
+    });
+
+    btn.addEventListener("click", () => copiarLista(user));
+  });
+});
