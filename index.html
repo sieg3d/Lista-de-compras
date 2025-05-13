@@ -62,7 +62,7 @@
         Compartilhar Lista
       </button>
       <button class="btn">
-        <img src="Imagens/duplicado.png" alt="Copiar Lista">
+        <img src="Imagens/duplicado.png" alt="Copiar Lista" onclick="window.location.href='copiar_lista.html'">
         Copiar Lista
       </button>
     </div>
@@ -83,6 +83,16 @@
   </footer>
 
   <script src="js/script.js"></script>
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then(reg => console.log('Service Worker registrado:', reg))
+          .catch(err => console.error('Falha ao registrar Service Worker:', err));
+      });
+    }
+  </script>
+  
 </body>
 
 </html>
