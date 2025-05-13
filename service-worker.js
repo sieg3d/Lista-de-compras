@@ -1,3 +1,21 @@
+"use strict";
+
+// Um Service Worker se comporta como um servidor proxy situado entre o navegador, uma aplicação web, e a rede 
+// (quando esta estiver disponível). Eles servem, dentre outras coisas, para possibilitar a criação de experiências 
+// OFFLINES eficientes, interceptando requisições de rede (agindo adequadamente de acordo com o status atual da conexão)  
+// e atualizar os assets que residem no servidor. 
+
+
+const CACHE_NAME = "static-cache-v2";
+const DATA_CACHE_NAME = "data-cache-v1";
+
+const FILES_TO_CACHE = [
+  "/",
+  "/index.html",
+  "/manifest.json",
+  "/style.css"
+];
+
 //--------------------------------------------------------------------------------//
 
 // 'self' é equivalente ao window.self (logo se refere à janela do navegador) e é usado somente em navegadores 
