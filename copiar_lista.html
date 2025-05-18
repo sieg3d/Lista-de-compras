@@ -31,10 +31,7 @@
         <i class="fa fa-bars"></i>
       </a>
       <div id="myLinks">
-        <a href="index.html">Início</a>
-        <a href="listas.html">Minhas Listas</a>
-        <a href="criar_lista.html">Criar Lista</a>
-        <a href="logout.html">Sair</a>
+        <a href="#" id="btnLogout">Sair</a>
       </div>
     </div>
 
@@ -60,13 +57,14 @@
   <footer class="footer">
     <p>© 2025 GHEmpresas - Todos os direitos reservados.</p>
   </footer>
-
+  <script src="js/script.js"></script>
+  <script type="module" src="js/copiar_lista.js"></script>
   <script>
     function menu() {
       const nav = document.getElementById('myLinks');
       nav.style.display = nav.style.display === 'block' ? 'none' : 'block';
     }
   </script>
-  <script type="module" src="js/copiar_lista.js"></script>
+
 </body>
 </html>

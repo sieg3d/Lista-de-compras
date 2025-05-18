@@ -27,9 +27,7 @@
       </a>
 
       <div id="myLinks">
-        <a onclick="window.location.href='cadastrar_produto.html'">Cadastrar Produtos</a>
-        <a onclick="window.location.href='estoque.html'">Estoque</a>
-        <a href="#">Sair</a>
+        <a href="#" id="btnLogout">Sair</a>
       </div>
     </div>
 
@@ -83,6 +81,8 @@
   </footer>
 
   <script src="js/script.js"></script>
+  <script type="module" src="js/app.js"></script>
+
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
